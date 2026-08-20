@@ -47,7 +47,41 @@
 
     <!-- Pantalla 3: Cantidad de entradas + resumen -->
     <section id="screen-summary" style="display:none;">
-      <h1>Resumen y cantidad de entradas</h1>
+      <header class="app-header">
+        <button id="btn-back-to-showtimes" type="button">← Volver</button>
+        <h2>Resumen de reserva</h2>
+      </header>
+
+      <main class="summary-main">
+        <div class="selected-movie summary-movie">
+          <img id="summary-movie-poster" src="" alt="Poster película" />
+          <div class="selected-movie-info">
+            <h3 id="summary-movie-title"></h3>
+            <div id="summary-showtime" class="sub"></div>
+          </div>
+        </div>
+
+        <div class="quantity-control">
+          <label for="ticket-quantity">Cantidad de entradas</label>
+          <div class="qty-controls">
+            <button id="qty-decrease" type="button" aria-label="Disminuir">−</button>
+            <input id="ticket-quantity" type="number" min="1" value="1" />
+            <button id="qty-increase" type="button" aria-label="Aumentar">+</button>
+          </div>
+        </div>
+
+        <div class="live-summary">
+          <p>Película: <strong id="summary-movie-title-2"></strong></p>
+          <p>Horario: <strong id="summary-showtime-2"></strong></p>
+          <p>Cantidad: <strong id="summary-quantity"></strong></p>
+          <p>Precio por entrada: <strong id="summary-unit-price">$3000</strong></p>
+          <p>Total: <strong id="summary-total"></strong></p>
+        </div>
+
+        <div class="actions">
+          <button id="btn-confirm-reservation" type="button">Confirmar reserva</button>
+        </div>
+      </main>
     </section>
 
     <!-- Pantalla 4: Mensaje de éxito -->

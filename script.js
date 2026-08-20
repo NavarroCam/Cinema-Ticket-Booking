@@ -1,4 +1,6 @@
-// Movies data and rendering for screen-movies + showtimes navigation
+// Movies data and rendering for screen-movies + showtimes + summary navigation
+
+const TICKET_PRICE = 3000; // fixed price per ticket
 
 const movies = [
   {
@@ -49,8 +51,24 @@ const selectedMovieTitle = document.getElementById('selected-movie-title');
 const showtimesList = document.getElementById('showtimes-list');
 const btnContinue = document.getElementById('btn-continue');
 
+// Summary screen elements
+const btnBackToShowtimes = document.getElementById('btn-back-to-showtimes');
+const summaryMoviePoster = document.getElementById('summary-movie-poster');
+const summaryMovieTitle = document.getElementById('summary-movie-title');
+const summaryShowtime = document.getElementById('summary-showtime');
+const summaryMovieTitle2 = document.getElementById('summary-movie-title-2');
+const summaryShowtime2 = document.getElementById('summary-showtime-2');
+const ticketQuantityInput = document.getElementById('ticket-quantity');
+const qtyDecrease = document.getElementById('qty-decrease');
+const qtyIncrease = document.getElementById('qty-increase');
+const summaryQuantity = document.getElementById('summary-quantity');
+const summaryUnitPrice = document.getElementById('summary-unit-price');
+const summaryTotal = document.getElementById('summary-total');
+const btnConfirmReservation = document.getElementById('btn-confirm-reservation');
+
 let selectedMovieId = null;
 let selectedShowtime = null; // stores the chosen showtime string
+let selectedQuantity = 1;
 
 function renderMovies() {
   moviesGrid.innerHTML = '';
@@ -213,11 +231,75 @@ btnBackToMovies.addEventListener('click', () => {
   updateSelectionVisual();
 });
 
-// Continue button: we do NOT advance screens here per your instruction (placeholder)
+// Continue button: navigate to summary if a showtime is selected
 btnContinue.addEventListener('click', () => {
-  // selection is stored in selectedShowtime, selectedMovieId
-  // next step will implement navigation to the summary screen
-  console.log('Selected movie:', selectedMovieId, 'showtime:', selectedShowtime);
+  if (!selectedMovieId || !selectedShowtime) return;
+  // reset default quantity when entering summary
+  selectedQuantity = 1;
+  ticketQuantityInput.value = String(selectedQuantity);
+  showSummaryScreen();
+});
+
+// Summary screen logic
+function showSummaryScreen() {
+  const movie = movies.find(m => m.id === selectedMovieId);
+  if (!movie) return;
+
+  summaryMoviePoster.src = movie.poster;
+  summaryMoviePoster.alt = `Poster de ${movie.title}`;
+  summaryMovieTitle.textContent = movie.title;
+  summaryShowtime.textContent = selectedShowtime;
+
+  // also fill the alternate summary fields
+  summaryMovieTitle2.textContent = movie.title;
+  summaryShowtime2.textContent = selectedShowtime;
+
+  updateSummaryDisplay();
+  showScreen(screenSummary);
+}
+
+function updateSummaryDisplay() {
+  const qty = Number(ticketQuantityInput.value) || 1;
+  selectedQuantity = Math.max(1, Math.floor(qty));
+
+  summaryQuantity.textContent = selectedQuantity;
+  summaryUnitPrice.textContent = `$${TICKET_PRICE}`;
+  summaryTotal.textContent = `$${selectedQuantity * TICKET_PRICE}`;
+}
+
+// Quantity controls
+qtyDecrease.addEventListener('click', () => {
+  const cur = Math.max(1, Number(ticketQuantityInput.value) || 1);
+  ticketQuantityInput.value = String(Math.max(1, cur - 1));
+  updateSummaryDisplay();
+});
+qtyIncrease.addEventListener('click', () => {
+  const cur = Math.max(1, Number(ticketQuantityInput.value) || 1);
+  ticketQuantityInput.value = String(cur + 1);
+  updateSummaryDisplay();
+});
+
+ticketQuantityInput.addEventListener('change', () => {
+  if (!ticketQuantityInput.value || Number(ticketQuantityInput.value) < 1) {
+    ticketQuantityInput.value = '1';
+  }
+  updateSummaryDisplay();
+});
+
+// Back from summary to showtimes (to change horario)
+btnBackToShowtimes.addEventListener('click', () => {
+  showShowtimesScreen();
+});
+
+// Confirm reservation placeholder (does NOT navigate to success yet)
+btnConfirmReservation.addEventListener('click', () => {
+  console.log('Confirm reservation pressed. Payload:', {
+    movieId: selectedMovieId,
+    showtime: selectedShowtime,
+    quantity: selectedQuantity,
+    total: selectedQuantity * TICKET_PRICE
+  });
+  // next step will implement navigation to success screen
 });
 
 // Inicializar
