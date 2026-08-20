@@ -22,7 +22,27 @@
 
     <!-- Pantalla 2: Selección de horario -->
     <section id="screen-showtimes" style="display:none;">
-      <h1>Seleccionar horario</h1>
+      <header class="app-header">
+        <button id="btn-back-to-movies" type="button">← Volver</button>
+        <h2 id="showtimes-title">Seleccionar horario</h2>
+      </header>
+
+      <main class="showtimes-main">
+        <div class="selected-movie">
+          <img id="selected-movie-poster" src="" alt="Poster película" />
+          <div class="selected-movie-info">
+            <h3 id="selected-movie-title"></h3>
+          </div>
+        </div>
+
+        <section id="showtimes-list" class="showtimes-list" aria-label="Horarios disponibles">
+          <!-- Botones de horarios se renderizan desde script.js -->
+        </section>
+
+        <div class="actions">
+          <button id="btn-continue" type="button" disabled>Continuar</button>
+        </div>
+      </main>
     </section>
 
     <!-- Pantalla 3: Cantidad de entradas + resumen -->

@@ -1,4 +1,4 @@
-// Movies data and rendering for screen-movies
+// Movies data and rendering for screen-movies + showtimes navigation
 
 const movies = [
   {
@@ -35,8 +35,22 @@ const movies = [
   }
 ];
 
+// DOM references
 const moviesGrid = document.getElementById('movies-grid');
+const screenMovies = document.getElementById('screen-movies');
+const screenShowtimes = document.getElementById('screen-showtimes');
+const screenSummary = document.getElementById('screen-summary');
+const screenSuccess = document.getElementById('screen-success');
+
+// Showtimes screen elements
+const btnBackToMovies = document.getElementById('btn-back-to-movies');
+const selectedMoviePoster = document.getElementById('selected-movie-poster');
+const selectedMovieTitle = document.getElementById('selected-movie-title');
+const showtimesList = document.getElementById('showtimes-list');
+const btnContinue = document.getElementById('btn-continue');
+
 let selectedMovieId = null;
+let selectedShowtime = null; // stores the chosen showtime string
 
 function renderMovies() {
   moviesGrid.innerHTML = '';
@@ -44,8 +58,10 @@ function renderMovies() {
   movies.forEach(movie => {
     const card = document.createElement('article');
     card.className = 'movie-card';
-    card.tabIndex = 0; // make it focusable
+    card.tabIndex = 0; // focusable
     card.dataset.movieId = movie.id;
+    card.setAttribute('role', 'button');
+    card.setAttribute('aria-pressed', 'false');
 
     card.innerHTML = `
       <img src="${movie.poster}" alt="Poster de ${movie.title}">
@@ -58,28 +74,25 @@ function renderMovies() {
       </div>
     `;
 
-    // Click on the card selects it (no navigation)
+    // Click selects the movie and navigates to showtimes screen
     card.addEventListener('click', (e) => {
-      // if a showtime button was clicked, allow selection but don't trigger other side effects
-      selectMovie(movie.id);
+      selectMovie(movie.id, { navigateToShowtimes: true });
     });
 
-    // Allow keyboard selection (Enter / Space)
+    // Keyboard selection (Enter / Space)
     card.addEventListener('keydown', (e) => {
       if (e.key === 'Enter' || e.key === ' ') {
         e.preventDefault();
-        selectMovie(movie.id);
+        selectMovie(movie.id, { navigateToShowtimes: true });
       }
     });
 
-    // Prevent showtime buttons from bubbling to other handlers that might be added later
+    // Prevent showtime buttons inside the card from bubbling (they are independent)
     card.querySelectorAll('.showtime-btn').forEach(btn => {
       btn.addEventListener('click', (ev) => {
         ev.stopPropagation();
-        // Visual feedback for clicked showtime (brief)
         btn.classList.add('active');
-        setTimeout(() => btn.classList.remove('active'), 200);
-        // Note: we do NOT navigate to the next screen in this step
+        setTimeout(() => btn.classList.remove('active'), 180);
       });
     });
 
@@ -89,15 +102,27 @@ function renderMovies() {
   updateSelectionVisual();
 }
 
-function selectMovie(id) {
-  if (selectedMovieId === id) return; // already selected
+function selectMovie(id, { navigateToShowtimes = false } = {}) {
+  if (selectedMovieId === id) {
+    if (navigateToShowtimes) {
+      showShowtimesScreen();
+    }
+    return;
+  }
   selectedMovieId = id;
+  // reset showtime when choosing a different movie
+  selectedShowtime = null;
   updateSelectionVisual();
+
+  if (navigateToShowtimes) {
+    showShowtimesScreen();
+  }
 }
 
 function updateSelectionVisual() {
   document.querySelectorAll('.movie-card').forEach(card => {
-    if (card.dataset.movieId === selectedMovieId) {
+    const id = card.dataset.movieId;
+    if (id === selectedMovieId) {
       card.classList.add('selected');
       card.setAttribute('aria-pressed', 'true');
     } else {
@@ -106,6 +131,94 @@ function updateSelectionVisual() {
     }
   });
 }
+
+function showScreen(screenEl) {
+  // hide all
+  [screenMovies, screenShowtimes, screenSummary, screenSuccess].forEach(el => {
+    el.style.display = 'none';
+  });
+  // show target
+  screenEl.style.display = '';
+}
+
+function showShowtimesScreen() {
+  const movie = movies.find(m => m.id === selectedMovieId);
+  if (!movie) return;
+
+  // fill poster + title
+  selectedMoviePoster.src = movie.poster;
+  selectedMoviePoster.alt = `Poster de ${movie.title}`;
+  selectedMovieTitle.textContent = movie.title;
+
+  // render showtime buttons
+  renderShowtimesForMovie(movie);
+
+  // navigate
+  showScreen(screenShowtimes);
+}
+
+function renderShowtimesForMovie(movie) {
+  showtimesList.innerHTML = '';
+
+  movie.showtimes.forEach(time => {
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'showtime-choice';
+    btn.dataset.time = time;
+    btn.textContent = time;
+
+    if (time === selectedShowtime) {
+      btn.classList.add('selected');
+    }
+
+    btn.addEventListener('click', () => {
+      selectShowtime(time);
+    });
+
+    showtimesList.appendChild(btn);
+  });
+
+  updateContinueState();
+}
+
+function selectShowtime(time) {
+  selectedShowtime = time;
+  // update visuals
+  document.querySelectorAll('.showtime-choice').forEach(btn => {
+    if (btn.dataset.time === time) {
+      btn.classList.add('selected');
+      btn.setAttribute('aria-pressed', 'true');
+    } else {
+      btn.classList.remove('selected');
+      btn.setAttribute('aria-pressed', 'false');
+    }
+  });
+
+  updateContinueState();
+}
+
+function updateContinueState() {
+  // For now the continue button is only enabled if a showtime is selected
+  if (selectedShowtime) {
+    btnContinue.disabled = false;
+  } else {
+    btnContinue.disabled = true;
+  }
+}
+
+// Back button handler: return to movies without losing selection
+btnBackToMovies.addEventListener('click', () => {
+  showScreen(screenMovies);
+  // keep selection visual in movies
+  updateSelectionVisual();
+});
+
+// Continue button: we do NOT advance screens here per your instruction (placeholder)
+btnContinue.addEventListener('click', () => {
+  // selection is stored in selectedShowtime, selectedMovieId
+  // next step will implement navigation to the summary screen
+  console.log('Selected movie:', selectedMovieId, 'showtime:', selectedShowtime);
+});
 
 // Inicializar
 renderMovies();
