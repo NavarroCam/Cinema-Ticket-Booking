@@ -3,13 +3,21 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
-    <title>Reserva de entradas - Esqueleto SPA</title>
+    <title>CineApp - Reserva de entradas</title>
     <link rel="stylesheet" href="style.css">
   </head>
   <body>
     <!-- Pantalla 1: Selección de película -->
     <section id="screen-movies">
-      <h1>Seleccionar película (pantalla inicial)</h1>
+      <header class="app-header">
+        <h1>CineApp</h1>
+      </header>
+
+      <main>
+        <div id="movies-grid" class="movies-grid" aria-live="polite">
+          <!-- Las tarjetas de películas se renderizan desde script.js -->
+        </div>
+      </main>
     </section>
 
     <!-- Pantalla 2: Selección de horario -->

@@ -1,1 +1,76 @@
-/* styles will go here */
+/* Minimal styles for the movies screen - keep it simple */
+:root{
+  --gap:16px;
+}
+
+body{
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+  margin:0;
+  padding:0;
+}
+
+.app-header{
+  padding:16px;
+  border-bottom:1px solid #eee;
+}
+
+.app-header h1{
+  margin:0;
+  font-size:1.25rem;
+}
+
+main{
+  padding:16px;
+}
+
+.movies-grid{
+  display:grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: var(--gap);
+}
+
+.movie-card{
+  border:1px solid #ddd;
+  padding:12px;
+  border-radius:6px;
+  background:#fff;
+  cursor:pointer;
+  display:flex;
+  flex-direction:column;
+  gap:8px;
+}
+
+.movie-card img{
+  width:100%;
+  height:auto;
+  border-radius:4px;
+  object-fit:cover;
+}
+
+.movie-meta{
+  font-size:0.9rem;
+  color:#333;
+}
+
+.movie-meta .title{
+  font-weight:600;
+}
+
+.showtimes{
+  display:flex;
+  flex-wrap:wrap;
+  gap:8px;
+}
+
+.showtime-btn{
+  padding:6px 8px;
+  border:1px solid #ccc;
+  background:#f8f8f8;
+  border-radius:999px;
+  font-size:0.85rem;
+}
+
+.movie-card.selected{
+  border-color:#0066ff;
+  box-shadow:0 0 0 3px rgba(0,102,255,0.08);
+}
